@@ -7,7 +7,11 @@ function download_files() {
     local files=("$@")
     for file in "${files[@]}"
     do
-        wget -Nq "$file"
+        # Remove the "?token=" suffix from the file name if private repository
+        filename=$(echo "$file" | grep -oP '(?<=/)[^/]+$')
+        modified_file="${filename/\?token=*/}"
+        # Download the file and save it with the modified name
+        wget -Nq "$file" -O $modified_file
     done
 }
 
@@ -48,30 +52,27 @@ function get_contents() {
 
 function updateFrontend(){
     #From root
-    git checkout frontend
     cd './frontend'
     get_contents "$FRONTEND_GIT"
     cd ..
-    #git add .
-    #git commit -m "Frontend project update"
-    #git push -u origin
+    git add .
+    git commit -m "Frontend project update"
+    git push -u origin
 }
 
 function updateBackend(){
     #From root
-    git checkout backend
     cd './backend'
     get_contents "$BACKEND_GIT"
     cd ..
-    #git add .
-    #git commit -m "Backend project update"
-    #git push -u origin
+    git add .
+    git commit -m "Backend project update"
+    git push -u origin
 }
 
 function main(){
     updateFrontend
     updateBackend
-    git checkout main
 
 }
 
