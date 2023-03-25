@@ -1,7 +1,7 @@
 #!/bin/bash
 
 FRONTEND_GIT="https://api.github.com/repos/alberttsg/frontend-nomadList/contents"
-BACKEND_GIT="https://api.github.com/repos/alberttsg/frontend-nomadList/contents"
+BACKEND_GIT="https://api.github.com/repos/Kric12/BackEnd-NomadSociety/contents"
 
 function download_files() {
     local files=("$@")
