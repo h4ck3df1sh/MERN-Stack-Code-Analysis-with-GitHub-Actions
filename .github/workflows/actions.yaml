@@ -1,0 +1,106 @@
+name: MERN Stack CI
+
+on:
+  push:
+    branches:
+      - 'frontend'
+      - 'backend'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: CycloneDX
+      run: |
+        npm run cyclonedx
+        mv sbom.xml sbom-frontend.xml
+
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    - name: Detect Secrets Scan
+      run: |
+        pip install detect-secrets
+        detect-secrets scan > detect-secrets-frontend.txt
+
+    - name: Checkov
+      run: |
+        pip install checkov
+        checkov -d . > checkov-frontend.txt
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: frontend-artifacts
+        path: |
+          sbom-frontend.xml
+          detect-secrets-frontend.txt
+          checkov-frontend.txt
+
+  build-and-test-backend:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: CycloneDX
+      run: |
+        npm run cyclonedx
+        mv sbom.xml sbom-backend.xml
+
+    - name: SonarCloud Scan
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+    - name: Detect Secrets Scan
+      run: |
+        pip install detect-secrets
+        detect-secrets scan > detect-secrets-backend.txt
+
+    - name: Checkov
+      run: |
+        pip install checkov
+        checkov -d . > checkov-backend.txt
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: backend-artifacts
+        path: |
+          sbom-backend.xml
+          detect-secrets-backend.txt
+          checkov-backend.txt

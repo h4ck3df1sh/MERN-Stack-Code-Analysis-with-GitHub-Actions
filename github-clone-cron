@@ -1,4 +1,8 @@
 #!/bin/bash
+
+FRONTEND_GIT="https://api.github.com/repos/alberttsg/frontend-nomadList/contents"
+BACKEND_GIT="https://api.github.com/repos/alberttsg/frontend-nomadList/contents"
+
 function download_files() {
     local files=("$@")
     for file in "${files[@]}"
@@ -31,7 +35,7 @@ function get_contents() {
         if [[ "$type" == "file" ]]; then
             local download_url=$(echo "$item" | jq -r '.download_url')
             files+=("$download_url")
-        elif [[ "$type" == "dir" ]]; then
+            elif [[ "$type" == "dir" ]]; then
             local dir_url=$(echo "$item" | jq -r '.url')
             dirs+=("$dir_url")
         fi
@@ -43,18 +47,31 @@ function get_contents() {
     done
 }
 
-function main(){
-  frontend_dir="https://api.github.com/repos/alberttsg/frontend-nomadList/contents"
-  backend_dir="https://api.github.com/repos/alberttsg/frontend-nomadList/contents"
-  api_dir="https://api.github.com/repos/alberttsg/frontend-nomadList/contents"
-  cd './frontend'
-  get_contents "$frontend_dir"
-  cd ../backend
-  echo 'TODO:'
-  cd ../api
-  echo 'TODO:'
-  cd ..
+function updateFrontend(){
+    #From root
+    git checkout frontend
+    cd './frontend'
+    get_contents "$FRONTEND_GIT"
+    cd ..
+    git add .
+    git commit -m "Frontend project update"
+    git push -u origin
+}
 
+function updateBackend(){
+    #From root
+    git checkout backend
+    cd './backend'
+    get_contents "$BACKEND_GIT"
+    cd ..
+    git add .
+    git commit -m "Backend project update"
+    git push -u origin
+}
+
+function main(){
+    updateFrontend
+    updateBackend
 }
 
 main
