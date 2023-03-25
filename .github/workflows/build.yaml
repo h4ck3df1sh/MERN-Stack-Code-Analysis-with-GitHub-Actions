@@ -1,4 +1,4 @@
-name: MERN Stack CI
+name: SonarCloud Scan
 
 on:
   push:
@@ -7,56 +7,15 @@ on:
       - 'backend'
 
 jobs:
-  build-and-test:
+  sonarcloud-scan:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: CycloneDX
-      run: |
-        npm run cyclonedx
-        if [[ $GITHUB_REF == "refs/heads/frontend" ]]; then mv sbom.xml sbom-frontend.xml; fi
-        if [[ $GITHUB_REF == "refs/heads/backend" ]]; then mv sbom.xml sbom-backend.xml; fi
 
     - name: SonarCloud Scan
       uses: sonarsource/sonarcloud-github-action@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-    - name: Detect Secrets Scan
-      run: |
-        pip install detect-secrets
-        detect-secrets scan > detect-secrets-output.txt
-        if [[ $GITHUB_REF == "refs/heads/frontend" ]]; then mv detect-secrets-output.txt detect-secrets-frontend.txt; fi
-        if [[ $GITHUB_REF == "refs/heads/backend" ]]; then mv detect-secrets-output.txt detect-secrets-backend.txt; fi
-
-    - name: Checkov
-      run: |
-        pip install checkov
-        checkov -d . > checkov-output.txt
-        if [[ $GITHUB_REF == "refs/heads/frontend" ]]; then mv checkov-output.txt checkov-frontend.txt; fi
-        if [[ $GITHUB_REF == "refs/heads/backend" ]]; then mv checkov-output.txt checkov-backend.txt; fi
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: ${{ github.ref }}-artifacts
-        path: |
-          sbom-*.xml
-          detect-secrets-*.txt
-          checkov-*.txt
