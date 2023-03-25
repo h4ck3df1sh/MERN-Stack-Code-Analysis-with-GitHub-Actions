@@ -16,7 +16,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        ls
+        cd ./frontend 2>/dev/null || cd ./backend 2>/dev/null
         npm install
 
     - name: Generate SBOM
