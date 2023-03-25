@@ -27,3 +27,9 @@ To use this project, simply include the appropriate tools and workflows in your 
 ## Conclusion
 
 By using this project to analyze MERN stack projects, the team can identify and address potential issues early in the development process, reducing the risk of major problems down the line.
+
+## Fullstack repositories
+
+- [Frontend](https://github.com/alberttsg/frontend-nomadList)
+
+- [Backend](https://github.com/Kric12/BackEnd-NomadSociety)

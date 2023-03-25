@@ -16,16 +16,11 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd frontend
-        npm install
-        cd ../backend
+        ls
         npm install
 
     - name: Generate SBOM
       run: |
-        cd frontend
-        npm run cyclonedx
-        cd ../backend
         npm run cyclonedx
 
     - name: Upload artifacts
