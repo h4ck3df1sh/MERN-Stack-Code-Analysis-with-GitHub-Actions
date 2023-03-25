@@ -52,6 +52,7 @@ function get_contents() {
 
 function updateFrontend(){
     #From root
+    git checkout frontend
     cd './frontend'
     get_contents "$FRONTEND_GIT"
     cd ..
@@ -62,6 +63,7 @@ function updateFrontend(){
 
 function updateBackend(){
     #From root
+    git checkout backend
     cd './backend'
     get_contents "$BACKEND_GIT"
     cd ..
@@ -73,7 +75,7 @@ function updateBackend(){
 function main(){
     updateFrontend
     updateBackend
-
+    
 }
 
 main
