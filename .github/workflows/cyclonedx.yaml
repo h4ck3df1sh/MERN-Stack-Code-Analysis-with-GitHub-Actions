@@ -21,6 +21,7 @@ jobs:
 
     - name: Generate SBOM
       run: |
+        cd ./frontend 2>/dev/null || cd ./backend 2>/dev/null
         npm run cyclonedx
 
     - name: Upload artifacts
