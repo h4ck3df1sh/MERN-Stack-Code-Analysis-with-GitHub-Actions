@@ -25,7 +25,6 @@ function get_contents() {
     local url=$1
     local github_token=$(grep -A 2 'github.com' ~/.netrc | grep 'password' | awk '{ print $NF }')
     local response=$(wget -qO- --header="Accept: application/vnd.github.v3+json"  --header="Authorization: token $github_token" "$url")
-    echo "$response"
     local files=()
     local dirs=()
     for item in $(echo "$response" | jq -c '.[]')
@@ -72,6 +71,8 @@ function updateBackend(){
 function main(){
     updateFrontend
     updateBackend
+    git checkout main
+
 }
 
 main
