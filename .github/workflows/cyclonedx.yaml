@@ -1,4 +1,4 @@
-name: CycloneDX Scan
+name: CycloneDX
 
 on:
   push:
@@ -7,29 +7,29 @@ on:
       - 'backend'
 
 jobs:
-  cyclonedx-scan:
+  cyclonedx:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
+      uses: actions/checkout@v2
 
     - name: Install dependencies
-      run: npm install
-
-    - name: CycloneDX
       run: |
+        cd frontend
+        npm install
+        cd ../backend
+        npm install
+
+    - name: Generate SBOM
+      run: |
+        cd frontend
         npm run cyclonedx
-        if [[ $GITHUB_REF == "refs/heads/frontend" ]]; then mv sbom.xml sbom-frontend.xml; fi
-        if [[ $GITHUB_REF == "refs/heads/backend" ]]; then mv sbom.xml sbom-backend.xml; fi
+        cd ../backend
+        npm run cyclonedx
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ github.ref }}-sbom
-        path: sbom-*.xml
+        name: ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'sbom_frontend.xml' || 'sbom_backend.xml' }}
+        path: ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'frontend/sbom.xml' || 'backend/sbom.xml' }}
