@@ -18,13 +18,18 @@ jobs:
         with:
           node-version: '14.x'
       - name: Install dependencies
-        run: npm install
-        working-directory: ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'frontend' || 'backend' }}
+        if: contains(github.ref, 'frontend')
+        run: |
+        cd ./frontend
+        npm install
+        if: contains(github.ref, 'backend')
+        run: |
+        cd ./backend
+        npm install
       - name: Generate SBOM with CycloneDX
         uses: CycloneDX/gh-action-generate-bom@v2
         with:
           output: './sbom.xml'
-        working-directory: ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'frontend' || 'backend' }}
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v2
         with:
