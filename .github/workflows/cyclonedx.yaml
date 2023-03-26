@@ -21,6 +21,8 @@ jobs:
         if: contains(github.ref, 'frontend')
         run: |
           cd ./frontend 2>/dev/null || cd ./backend 2>/dev/null
+          pwd
+          ls
           npm install
 
       - name: Generate SBOM with CycloneDX
