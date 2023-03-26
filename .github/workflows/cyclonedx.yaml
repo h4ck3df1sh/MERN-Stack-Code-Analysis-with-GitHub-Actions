@@ -1,32 +1,39 @@
 name: CycloneDX
+
 on:
   push:
     branches:
-      - frontend
-      - backend
+      - 'frontend'
+      - 'backend'
+
 jobs:
-  build-and-generate-sbom:
+  cyclonedx:
     runs-on: ubuntu-latest
+    name: Generate CycloneDX SBOM
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v2.5.3
         with:
-          node-version: '14'
-      - name: Install Dependencies
-        run: npm ci
+          node-version: '14.x'
+      - name: Install dependencies
+        run: npm install
         working-directory: ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'frontend' || 'backend' }}
       - name: Generate SBOM with CycloneDX
-        uses: CycloneDX/gh-node-module-generatebom@v1
-        with: 
+        uses: CycloneDX/gh-action-generate-bom@v2
+        with:
           output: './sbom.xml'
         working-directory: ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'frontend' || 'backend' }}
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v2
         with:
-          name: sbom
-          path: ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'frontend_sbom.xml' || 'backend_sbom.xml' }}
+          name: ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'sbom_frontend.xml' || 'sbom_backend.xml' }}
+          path: ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'frontend/sbom.xml' || 'backend/sbom.xml' }}
+      - name: Download SBOM artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'sbom_frontend.xml' || 'sbom_backend.xml' }}
+          path: './'
       - name: Display contents of SBOM artifact
-        if: always()
-        run: |
-          cat ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'frontend_sbom.xml' || 'backend_sbom.xml' }}
+        run: cat sbom.xml
