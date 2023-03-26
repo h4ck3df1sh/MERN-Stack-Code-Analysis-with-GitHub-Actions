@@ -18,7 +18,6 @@ jobs:
         with:
           node-version: '14.x'
       - name: Install dependencies
-        if: contains(github.ref, 'frontend')
         run: |
           cd ./frontend 2>/dev/null || cd ./backend 2>/dev/null
           pwd
