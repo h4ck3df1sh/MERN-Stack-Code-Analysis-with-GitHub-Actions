@@ -20,12 +20,12 @@ jobs:
       - name: Install dependencies
         if: contains(github.ref, 'frontend')
         run: |
-        cd ./frontend
-        npm install
+          cd ./frontend
+          npm install
         if: contains(github.ref, 'backend')
         run: |
-        cd ./backend
-        npm install
+          cd ./backend
+          npm install
       - name: Generate SBOM with CycloneDX
         uses: CycloneDX/gh-action-generate-bom@v2
         with:
