@@ -18,11 +18,11 @@ jobs:
         with:
           node-version: '14.x'
       - name: Install dependencies
-        if: contains(github.ref, 'frontend')
+      - if: contains(github.ref, 'frontend')
         run: |
           cd ./frontend
           npm install
-        if: contains(github.ref, 'backend')
+      - if: contains(github.ref, 'backend')
         run: |
           cd ./backend
           npm install
