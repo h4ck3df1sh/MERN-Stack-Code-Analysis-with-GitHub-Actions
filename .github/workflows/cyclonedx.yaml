@@ -24,7 +24,7 @@ jobs:
           npm install
 
       - name: Generate SBOM with CycloneDX
-        uses: CycloneDX/gh-action-generate-bom@v2
+        uses: CycloneDX/gh-node-module-generatebom@v1
         with:
           output: './sbom.xml'
       - name: Upload SBOM artifact
