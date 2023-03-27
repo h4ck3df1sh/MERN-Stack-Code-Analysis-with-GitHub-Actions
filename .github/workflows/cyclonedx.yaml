@@ -7,7 +7,7 @@ on:
       - 'backend'
 
 env:
-  WORKING_DIR: ${{ github.workspace }}/${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'frontend' || 'backend' }}
+  WORKING_DIR: ${{ github.workspace }}
 defaults:
   run:
     working-directory: $WORKING_DIR
