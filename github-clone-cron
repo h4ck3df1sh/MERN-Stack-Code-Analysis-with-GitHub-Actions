@@ -57,7 +57,7 @@ function updateFrontend(){
     get_contents "$FRONTEND_GIT"
     cd ..
     git add .
-    git commit -m "Frontend project update"
+    git commit -m "Frontend project update $1"
     git push -u origin
 }
 
@@ -67,14 +67,16 @@ function updateBackend(){
     cd './backend'
     get_contents "$BACKEND_GIT"
     cd ..
+    
     git add .
-    git commit -m "Backend project update"
+    git commit -m "Backend project update $1"
     git push -u origin
 }
 
 function main(){
-    updateFrontend
-    updateBackend
+    data=$(date -I)
+    updateFrontend "$data"
+    updateBackend "$data"
     
 }
 
