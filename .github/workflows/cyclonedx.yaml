@@ -25,11 +25,15 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-          ls -la
       - name: Generate SBOM with CycloneDX
         uses: CycloneDX/gh-node-module-generatebom@v1
         with:
           output: ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'sbom_frontend.xml' || 'sbom_backend.xml' }}
+        run: |
+          ls -la
+          pwd
+          cat package.json
+          cat package-lock.json
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v3
         with:
