@@ -25,7 +25,10 @@ jobs:
         with:
           node-version: '14'
       - name: Install dependencies
-        run: npm install
+        run: |
+          ls
+          pwd
+          npm install
       - name: Generate SBOM with CycloneDX
         uses: CycloneDX/gh-node-module-generatebom@v1
         with:
