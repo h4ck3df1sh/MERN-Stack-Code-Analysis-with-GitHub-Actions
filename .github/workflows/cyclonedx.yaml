@@ -23,11 +23,11 @@ jobs:
           pwd
           ls
           npm install
-      - working-directory: ${{ if startsWith(github.ref, 'frontend') }}frontend${{ else }}backend${{ endif }}
       - name: Generate SBOM with CycloneDX
         uses: CycloneDX/gh-node-module-generatebom@v1
         with:
           output: './sbom.xml'
+        working-directory: ${{ if startsWith(github.ref, 'frontend') }}frontend${{ else }}backend${{ endif }}
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v2
         with:
