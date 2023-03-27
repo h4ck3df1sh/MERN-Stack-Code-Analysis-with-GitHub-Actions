@@ -6,11 +6,11 @@ on:
       - 'frontend'
       - 'backend'
 
+env:
+  WORKING_DIR: ${{ endsWith(env.GITHUB_REF, 'frontend') && 'frontend' || 'backend' }}
 defaults:
   run:
     shell: bash
-    env:
-      WORKING_DIR: ${{ endsWith(env.GITHUB_REF, 'frontend') && 'frontend' || 'backend' }}
     working-directory: ${{ env.WORKING_DIR }}
 
 jobs:
