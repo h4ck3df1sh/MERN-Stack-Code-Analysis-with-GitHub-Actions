@@ -10,7 +10,6 @@ env:
   WORKING_DIR: ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'frontend' || 'backend' }}
 defaults:
   run:
-    shell: bash
     working-directory: $WORKING_DIR
 
 jobs:
