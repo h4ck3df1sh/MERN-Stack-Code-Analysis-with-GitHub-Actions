@@ -9,7 +9,7 @@ on:
 defaults:
   run:
     shell: bash
-    working-directory: ${{ endsWith(github.ref, 'frontend') && 'frontend' || 'backend' }}
+    working-directory: ${{ github.event_name == 'push' && contains(github.ref, 'frontend') && 'frontend' || 'backend' }}
 
 jobs:
   cyclonedx:
