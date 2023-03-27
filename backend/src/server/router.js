@@ -4,7 +4,7 @@ import Router from 'express';
 
 // ROUTER FILES
 import { register, login, auth } from './auth.js';
-import cityRouter from '../api/routers/cityRouter.js'
+import countryRouter from '../api/routers/countryRouter.js'
 import postRouter from '../api/routers/postRouter.js';
 import usersRouter from '../api/routers/usersRouter.js';
 import commentRouter from '../api/routers/commentRouter.js';
@@ -19,7 +19,7 @@ const router = Router();
 router.post('/register', register);
 router.post('/login', login);
 router.get('/token', auth, (req, res) => res.json('OK'));
-router.use('/cities', cityRouter);
+router.use('/countries', countryRouter);
 router.use('/search', searchRouter);
 router.use('/post', auth, postRouter);
 router.use('/users', auth, usersRouter);

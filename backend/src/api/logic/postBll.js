@@ -44,4 +44,10 @@ async function isLiked (id, userId){
   const isLiked = await postRepo.isLiked(id, userId);
   return isLiked;
 }
+
+export async function createComment({ content, author, postId }) {
+  const postComments = await postRepo.createComment({ content, author, postId });
+  return postComments;
+}
+
 export { createPost, getAll, getById, updatePostById, deletePostById , getPostsByAuthorId, getCommentsByPostId ,likePost, isLiked }

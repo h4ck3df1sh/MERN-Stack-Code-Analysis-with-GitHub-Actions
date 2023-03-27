@@ -30,24 +30,12 @@ export async function getUserByToken(query, params) {
   return user;
 }
 
-export async function followUserById(actionUser, affectUser) {
-  if (actionUser == affectUser) throw new Error("Can't follow itself");
-  await usersRepository.getUserById({ id: actionUser });
-  await usersRepository.getUserById({ id: affectUser });
-  const addedFollower = await usersRepository.addFollower(actionUser, affectUser);
-  const addedFollowed = await usersRepository.addFollowed(actionUser, affectUser);
-  return { addedFollower, addedFollowed };
+export async function toggleFollowByUserId(actionUser, affectUser) {
+  const followedUser = await usersRepository.toggleFollowByUserId(actionUser, affectUser);
+  return followedUser;
 }
-export async function updateAvatar(user, image) {
-  const avatar = await usersRepository.updateAvatar(user, image);
-  console.log(avatar)
-  return avatar;
+export async function visitedCountryByUserId(userId,countryId) {
+  const user = await usersRepository.visitedCountryByUserId(userId,countryId);
+
+  return user;
 }
-export async function unfollowUserById(actionUser, affectUser) {
-  await usersRepository.getUserById({ id: actionUser });
-  await usersRepository.getUserById({ id: affectUser });
-  const removedFollower = await usersRepository.removeFollower(actionUser, affectUser);
-  const removedFollowed = await usersRepository.removeFollowed(actionUser, affectUser);
-  return { removedFollower, removedFollowed };
-}
- 

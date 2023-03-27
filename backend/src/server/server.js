@@ -8,7 +8,7 @@ import { DBconnection } from '../database/databaseConnection.js';
 
 // DEPENDENCIES
 import express from 'express';
-import { generateCities, generateUsers, generatePosts, generateComments } from './generate.js';
+// import { generateUsers, generatePosts, generateComments } from './generate.js';
 
 // SWAGGER
 import swaggerUI from 'swagger-ui-express';

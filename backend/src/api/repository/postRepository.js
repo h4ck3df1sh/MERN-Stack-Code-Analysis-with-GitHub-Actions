@@ -1,6 +1,7 @@
 import postModel from '../models/postSchema.js';
 import userModel from '../models/userSchema.js';
 import mongoose from 'mongoose';
+import commentModel from '../models/commentSchema.js';
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -72,7 +73,6 @@ async function likePost(postId, userId) {
   if (post.likes.includes(userId)) {
     post.likes.splice(post.likes.indexOf(userId), 1);
     user.likedPosts.splice(user.likedPosts.indexOf(postId), 1);
-
   } else {
     post.likes.push(userId);
     user.likedPosts.push(postId);
@@ -86,6 +86,19 @@ async function isLiked(id, userId) {
   if (!post) { throw new Error('ERROR: No post match the search') };
   const isLiked = post.likes.includes(userId);
   return isLiked;
+}
+
+export async function createComment({ content, author, postId }) {
+  const newComment = await commentModel.create({ content, author, postId });
+  const newPost = await postModel.findOne({ _id: postId });
+  const newAuthor = await userModel.findOne({ _id: author });
+  newAuthor.comments.push(newComment._id);
+  newAuthor.save();
+  newPost.comments.push(newComment._id);
+  newPost.save();
+  await newPost.populate('comments');
+  await newPost.populate('comments.author');
+  return newPost;
 }
 
 export { createPost, getAll, getById, updatePostById, deletePostById, getPostsByAuthorId, getCommentsByPostId, likePost, isLiked }

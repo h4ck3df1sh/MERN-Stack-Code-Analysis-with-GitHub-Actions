@@ -35,13 +35,13 @@ async function updateComment(req, res, next) {
         next(error);
     }
 }
-async function deleteComment(req, res, next) {
+async function deleteComment(req, res) {
     const {id} = req.params;
     try {
         const comment = await commentLogic.deleteComment({id});
-        res.status(200).json(comment);
+        return res.json(comment);
     } catch (error) {
-        next(error);
+        return res.status(400).json(error.message);
     }
 }
 async function getCommentById(req, res, next) {

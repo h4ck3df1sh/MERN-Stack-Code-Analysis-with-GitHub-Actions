@@ -68,27 +68,24 @@ export async function getUserByToken(req, res) {
   }
 }
 
-export async function followUserById(req, res) {
+export async function toggleFollowByUserId(req, res) {
   try {
     const { id: affectUser } = req.params;
     if (!affectUser || !affectUser.match(/^[a-f\d]{24}$/i)) return res.status(400).json('Missing or invalid ID format.');
     const actionUser = req.user._id;
     if (affectUser == actionUser) res.status(400).json('User cannot follow itself.')
-    const users = await usersLogic.followUserById(actionUser, affectUser);
-    return res.json(users);
+    const followedUser = await usersLogic.toggleFollowByUserId(actionUser, affectUser);
+    return res.json(followedUser);
   } catch (error) {
     return res.status(error.status || 500).json(error.message);
   }
 }
-
-export async function unfollowUserById(req, res) {
+export async function visitedCountryByUserId(req, res) {
   try {
-    const { id: affectUser } = req.params;
-    if (!affectUser || !affectUser.match(/^[a-f\d]{24}$/i)) return res.status(400).json('Missing or invalid ID format.');
-    const actionUser = req.user._id;
-    if (affectUser == actionUser) res.status(400).json('User cannot unfollow itself.')
-    const users = await usersLogic.unfollowUserById(actionUser, affectUser);
-    return res.json(users);
+    const { userId } = req.params;
+   const{ countryId } = req.params;
+   const user = await usersLogic.visitedCountryByUserId(userId,countryId);
+    return res.json(user);
   } catch (error) {
     return res.status(error.status || 500).json(error.message);
   }

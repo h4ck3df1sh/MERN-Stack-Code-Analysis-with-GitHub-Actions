@@ -85,7 +85,7 @@ router.get('/:postId/comments', postController.getCommentsByPostId);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/:postId/comments', commentController.createComment);
+router.post('/createcomment/:postId', postController.createComment);
 /**
  * @swagger
  * /post/like/{id}:

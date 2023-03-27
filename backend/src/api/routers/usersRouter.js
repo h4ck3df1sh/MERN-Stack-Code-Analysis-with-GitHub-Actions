@@ -9,9 +9,10 @@ router.get('/info', usersController.getUserByToken)
 router.get('/id/:id', usersController.getUserById)
 router.put('/id/:id', usersController.updateUserById)
 router.delete('/id/:id', usersController.deleteUserById)
-router.post('/follow/:id', usersController.followUserById)
-router.post('/unfollow/:id', usersController.unfollowUserById)
+router.post('/follow/:id', usersController.toggleFollowByUserId)
 router.post('/avatar',uploadImageMiddleware, usersController.updateUserAvatarById)
+router.post('/:userId/countries/:countryId', usersController.visitedCountryByUserId)
+
 
 export default router;
 

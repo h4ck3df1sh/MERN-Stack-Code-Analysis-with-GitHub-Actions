@@ -57,18 +57,31 @@ export async function getUserByToken(query, params) {
   return users;
 }
 
-export async function addFollower(actionUser, affectUser) {
-  return await userModel.findOneAndUpdate({ _id: affectUser }, { $addToSet: { 'followers': actionUser } }, { new: true }).select('-password -salt').exec();
+export async function toggleFollowByUserId(actionUser, affectUser) {
+  const userFollowing = await userModel.findOne({ _id: actionUser });
+  const userFollowed = await userModel.findOne({ _id: affectUser });
+  if (userFollowing.followed.includes(affectUser)) {
+    userFollowing.followed.splice(userFollowing.followed.indexOf(affectUser), 1);
+    userFollowed.followers.splice(userFollowed.followers.indexOf(actionUser), 1);
+  } else {
+    userFollowing.followed.push(affectUser);
+    userFollowed.followers.push(actionUser);
+  }
+  await userFollowing.save();
+  await userFollowed.save();
+  await userFollowed.populate('followers')
+  await userFollowed.populate('followed')
+  await userFollowed.populate('likedPosts')
+  return userFollowed;
 }
+export async function visitedCountryByUserId(userId, countryId) {
+  const user = await userModel.findOneAndUpdate(
+    { _id: userId },
+    { $push: { visited: countryId } },
+    { new: true }
+    );
+    if (!user) throw new Error('User not found.');
+    return user;
+    
 
-export async function addFollowed(actionUser, affectUser) {
-  return await userModel.findOneAndUpdate({ _id: actionUser }, { $addToSet: { 'followed': affectUser } }, { new: true }).select('-password -salt').exec();
-}
-
-export async function removeFollower(actionUser, affectUser) {
-  return await userModel.findOneAndUpdate({ _id: affectUser }, { $pull: { 'followers': actionUser } }, { new: true }).select('-password -salt').exec();
-}
-
-export async function removeFollowed(actionUser, affectUser) {
-  return await userModel.findOneAndUpdate({ _id: actionUser }, { $pull: { 'followed': affectUser } }, { new: true }).select('-password -salt').exec();
 }

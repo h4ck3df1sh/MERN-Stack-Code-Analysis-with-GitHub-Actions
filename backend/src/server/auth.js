@@ -30,7 +30,7 @@ export async function auth(req, res, next) {
   const authStr = new Strategy(authOptions, async (jwt_payload, callback) => {
     try {
       const getUser = await usersRepository.getUser({ _id: jwt_payload.id });
-      if (!getUser) return callback('User not found.');
+      if (!getUser) return callback('Unauthorized: User not found.');
       return callback(null, getUser);
     } catch (error) {
       return callback(error);
