@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '14.x'
+          node-version: '14'
       - name: Install dependencies
         run: |
           cd ./frontend 2>/dev/null || cd ./backend 2>/dev/null
@@ -25,6 +25,8 @@ jobs:
           npm install
 
       - name: Generate SBOM with CycloneDX
+        run:
+          ls
         uses: CycloneDX/gh-node-module-generatebom@v1
         with:
           output: './sbom.xml'
