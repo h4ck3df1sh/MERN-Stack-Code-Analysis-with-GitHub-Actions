@@ -12,7 +12,7 @@ env:
 defaults:
   run:
     shell: bash
-    working-directory: ${{ WORKING_DIR }}
+    working-directory: $WORKING_DIR
 
 jobs:
   cyclonedx:
