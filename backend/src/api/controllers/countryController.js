@@ -78,11 +78,24 @@ async function deleteById(req, res) {
       }
 }
 
-const getCountryByFilters = async (req,res) => {
-    const filters = req.query;
-    const getCountry = await countryLogic.getCountryByFilters(filters);
-    res.json(getCountry);
+const getCountries = async (req,res) => {
+  try {
+    const getCountry = await countryLogic.getCountries();
+    return res.json(getCountry);
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
 }
 
-
-export {getByName, getAll, getById , deleteById ,updateById , createCountry, getCountryByFilters}
+const createVisitor= async (req,res) => {
+  const {countryId} = req.params;
+  const userId = req.user._id;
+  try{
+    const country = await countryLogic.createVisitor(countryId, userId );
+    res.json(country);
+  }
+  catch (error) {
+    return res.status(error.status || 500).json(error.message);
+  }
+}
+export {getByName, getAll, getById , deleteById ,updateById , createCountry, getCountries, createVisitor}

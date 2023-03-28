@@ -6,7 +6,8 @@ const postSchema = new Schema({
   author: { type: Schema.Types.ObjectId, ref: 'User' },
   likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
-  imagePost: [{ type: String }]
+  imagePost: [{ type: String }],
+  sentiment: { type: Number, min: 1 , max: 5 , default: 5},
 }, {
   timestamps: true,
   toObject: { getters: true },

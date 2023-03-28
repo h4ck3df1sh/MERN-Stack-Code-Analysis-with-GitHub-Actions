@@ -1,119 +1,124 @@
 import { faker } from '@faker-js/faker';
 import crypto from 'crypto';
+import { countriesData } from './countriesData.js';
 import userModel from '../api/models/userSchema.js';
-import cityModel from '../api/models/citySchema.js';
+import countryModel from '../api/models/countrySchema.js';
 import postModel from '../api/models/postSchema.js';
 import commentModel from '../api/models/commentSchema.js';
 
 const images = [
-  'https://cdn.pixabay.com/photo/2016/09/05/21/37/cat-1647775_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2015/02/25/17/56/cat-649164_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2015/04/23/21/59/tree-736875_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2018/05/08/08/44/cat-3382099_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2016/03/28/12/35/cat-1285634_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323231_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2016/12/13/05/15/puppy-1903313_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2016/07/10/21/47/cat-1508613_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2017/09/12/13/14/cat-2749844_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2016/02/10/16/37/cat-1192026_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2015/06/19/21/24/the-paparazzi-815478_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2017/07/24/19/57/tiger-2535888_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2014/03/29/09/17/cat-297656_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2016/09/05/21/37/cat-1647775_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2017/07/24/19/57/lion-2535886_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2017/06/17/23/46/cat-2417366_960_720.jpg',
-  'https://cdn.pixabay.com/photo/2017/03/29/09/59/cat-2184682_960_720.jpg'
+  'https://picsum.photos/id/28/367/267',
+  'https://picsum.photos/id/29/4000/2670',
+  'https://picsum.photos/id/25/5000/3333',
+  'https://picsum.photos/id/27/3264/1836',
+  'https://picsum.photos/id/24/4855/1803',
+  'https://picsum.photos/id/26/4209/2769',
+  'https://picsum.photos/id/23/3887/4899',
+  'https://picsum.photos/id/22/4434/3729',
+  'https://picsum.photos/id/21/3008/2008',
+  'https://picsum.photos/id/20/367/267',
+  'https://picsum.photos/id/19/2500/1667',
+  'https://picsum.photos/id/18/2500/1667',
+  'https://picsum.photos/id/17/2500/1667',
+  'https://picsum.photos/id/16/2500/1667',
+  'https://picsum.photos/id/15/2500/1667',
+  'https://picsum.photos/id/14/2500/1667',
+  'https://picsum.photos/id/13/2500/1667',
+  'https://picsum.photos/id/12/2500/1667',
+  'https://picsum.photos/id/11/2500/1667',
+  'https://picsum.photos/id/10/2500/1667',
+  'https://picsum.photos/id/9/5000/3269',
 ];
 
-export async function generateCities() {
+const hobbies = ['Playing video games', 'Watching movies', 'Watching TV shows', 'Listening to music', 'Dancing', 'Singing', 'Playing board games', 'Playing card games', 'Playing chess', 'Playing poker', 'Playing sports', 'Running', 'Jogging', 'Swimming', 'Yoga', 'Pilates', 'Martial arts', 'Cycling', 'Rollerblading', 'Skateboarding', 'Snowboarding', 'Skiing', 'Surfing the internet', 'Socializing with friends', 'Traveling', 'Collecting stamps', 'Collecting coins', 'Collecting antiques', 'Reading comics', 'Playing with pets'];
 
-  const cities = [
-    { cityName: 'Tokyo', country: 'Japan' },
-    { cityName: 'New York City', country: 'United States' },
-    { cityName: 'Mumbai', country: 'India' },
-    { cityName: 'Beijing', country: 'China' },
-    { cityName: 'Istanbul', country: 'Turkey' },
-    { cityName: 'London', country: 'United Kingdom' },
-    { cityName: 'Sao Paulo', country: 'Brazil' },
-    { cityName: 'Moscow', country: 'Russia' },
-    { cityName: 'Lagos', country: 'Nigeria' },
-    { cityName: 'Mexico City', country: 'Mexico' }
-  ];
+const avatars = [
+  "https://reqres.in/img/faces/1-image.jpg",
+  "https://reqres.in/img/faces/2-image.jpg",
+  "https://reqres.in/img/faces/3-image.jpg",
+  "https://reqres.in/img/faces/4-image.jpg",
+  "https://reqres.in/img/faces/5-image.jpg",
+  "https://reqres.in/img/faces/6-image.jpg",
+  "https://reqres.in/img/faces/7-image.jpg",
+  "https://reqres.in/img/faces/8-image.jpg",
+  "https://reqres.in/img/faces/9-image.jpg",
+  "https://reqres.in/img/faces/10-image.jpg",
+  "https://reqres.in/img/faces/11-image.jpg",
+  "https://reqres.in/img/faces/12-image.jpg",
+]
 
-  for (let i = 0; i < 10; i++) {
-    const cityName = cities[i].cityName;
-    const country = cities[i].country;
-    const survey = [];
-    const visited = [];
-    const image = [];
+export async function addCountries() {
+  for (let country of countriesData) {
+    await countryModel.create(country);
+  }
+}
 
-    const newCity = {
-      cityName,
-      country,
-      survey,
-      visited,
-      image,
-    }
-
-    await cityModel.create(newCity);
+export async function emptyVisitors() {
+  const countries = await countryModel.find();
+  for (let country of countries) {
+    country.visitors = [];
+    await country.save();
   }
 }
 
 export async function generateUsers() {
-  const cities = await cityModel.find();
+  const countries = await countryModel.find();
 
   for (let i = 0; i < 1000; i++) {
-    const randomCity = faker.helpers.arrayElement(cities)
+    const randomCountry = faker.helpers.arrayElement(countries);
+    const randomCountry2 = faker.helpers.arrayElement(countries);
+    const randomPW = '123456';
+    const salt = crypto.randomBytes(16).toString('hex');
+    const password = crypto.pbkdf2Sync(randomPW, salt, 310000, 32, 'sha256').toString('hex');
+
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
     const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`;
-    const nationality = randomCity.country;
+    const nationality = randomCountry.country;
     const gender = faker.helpers.arrayElement(['Male', 'Female', 'Other']);
     const birthdate = faker.date.between('1950-01-01', '2005-12-31');
-    const city = randomCity._id;
+    const country = randomCountry._id;
     const followers = [];
     const followed = [];
     const likedPosts = [];
     const comments = [];
-    const avatar = faker.helpers.arrayElement(images);
+    const avatar = faker.helpers.arrayElement(avatars);
     const username = `${firstName.toLowerCase()}_${lastName.toLowerCase()}`;
     const role = 'client';
-    const prefLocation = faker.address.country();
+    const prefLocation = randomCountry2.country;
     const profession = faker.name.jobTitle();
-    const hobby = faker.helpers.arrayElement(['Reading', 'Traveling', 'Hiking', 'Cooking', 'Sports', 'Music']);
-    const hobby2 = faker.helpers.arrayElement(['Reading', 'Traveling', 'Hiking', 'Cooking', 'Sports', 'Music']);
+    const visited = [];
+    const hobby = faker.helpers.arrayElement(hobbies);
+    const hobby2 = faker.helpers.arrayElement(hobbies);
     const bio = faker.lorem.sentences();
-    const location = `${randomCity.cityName}, ${randomCity.country}`;
+    const location = randomCountry.country;
     const website = `https://www.website.com/${firstName.toLowerCase()}.${lastName.toLowerCase()}`;
     const facebook = `https://www.facebook.com/${firstName.toLowerCase()}.${lastName.toLowerCase()}`;
     const twitter = `https://twitter.com/${firstName.toLowerCase()}${lastName.toLowerCase()}`;
     const instagram = `https://www.instagram.com/${firstName.toLowerCase()}${lastName.toLowerCase()}`;
     const linkedin = `https://www.linkedin.com/in/${firstName.toLowerCase()}-${lastName.toLowerCase()}`;
     const github = `https://github.com/${firstName.toLowerCase()}${lastName.toLowerCase()}`;
-    const salt = crypto.randomBytes(16).toString('hex');
-    const randomPW = '123456';
-    const password = crypto.pbkdf2Sync(randomPW, salt, 310000, 32, 'sha256').toString('hex');
 
     const newUser = {
       firstName,
       lastName,
       email,
+      password,
       nationality,
       gender,
       birthdate,
-      city,
+      country,
       followers,
       followed,
       likedPosts,
       comments,
       avatar,
       username,
+      salt,
       role,
       prefLocation,
       profession,
+      visited,
       hobby,
       hobby2,
       bio,
@@ -124,8 +129,6 @@ export async function generateUsers() {
       instagram,
       linkedin,
       github,
-      salt,
-      password,
     };
 
     await userModel.create(newUser);
@@ -137,12 +140,14 @@ export async function generatePosts() {
 
   for (let i = 0; i < 250; i++) {
     const randomAuthor = faker.helpers.arrayElement(authors);
+
     const title = faker.lorem.sentences();
     const content = faker.lorem.paragraph();
     const author = randomAuthor._id;;
     const likes = [];
     const comments = [];
     const imagePost = [faker.helpers.arrayElement(images)];
+    const sentiment = 5;
 
     const newPost = {
       title,
@@ -151,6 +156,7 @@ export async function generatePosts() {
       likes,
       comments,
       imagePost,
+      sentiment,
     }
 
     await postModel.create(newPost)
@@ -164,6 +170,7 @@ export async function generateComments() {
   for (let i = 0; i < 1000; i++) {
     const randomAuthor = faker.helpers.arrayElement(authors);
     const randomPost = faker.helpers.arrayElement(posts);
+
     const content = faker.lorem.paragraph();
     const author = randomAuthor._id;
     const post = randomPost._id;
@@ -180,5 +187,28 @@ export async function generateComments() {
 
     const comm = await commentModel.create(newComment);
     await postModel.findOneAndUpdate({ _id: randomPost._id }, { $push: { 'comments': comm._id } });
+  }
+}
+
+export async function addVisitors() {
+  const countries = await countryModel.find();
+  const users = await userModel.find();
+
+  for (let i = 0; i < 1000; i++) {
+    const randomCity = faker.helpers.arrayElement(countries);
+    const randomUser = faker.helpers.arrayElement(users);
+
+    randomCity.visitors.push(randomUser);
+    randomUser.visited.push(randomCity);
+    await randomCity.save();
+    await randomUser.save();
+  }
+}
+
+export async function changeImages() {
+  const posts = await postModel.find();
+  for (let post of posts) {
+    post.imagePost = [faker.helpers.arrayElement(images)]
+    await post.save();
   }
 }

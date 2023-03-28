@@ -1,4 +1,6 @@
 import userModel from '../models/userSchema.js';
+import { Types } from 'mongoose';
+const { ObjectId } = Types;
 
 export async function getUser(query) {
   const response = await userModel.findOne(query);
@@ -48,11 +50,12 @@ export async function updateAvatar(user, image) {
 
 
 export async function getUserByToken(query, params) {
-  const { populateFollowers, populateFollowed, populateLikedPosts } = params;
+  const { populateFollowers, populateFollowed, populateLikedPosts, visited } = params;
   const users = await userModel.findOne(query).select('-password -salt').exec();
   if (populateFollowers == 'true') await users.populate('followers');
   if (populateFollowed == 'true') await users.populate('followed');
   if (populateLikedPosts == 'true') await users.populate('likedPosts');
+  if (visited == 'true') await users.populate('visited');
   if (!users) throw new Error('No users found.');
   return users;
 }
@@ -75,13 +78,27 @@ export async function toggleFollowByUserId(actionUser, affectUser) {
   return userFollowed;
 }
 export async function visitedCountryByUserId(userId, countryId) {
+  const userFound = await userModel.findOne({ _id: new ObjectId(userId)  });
+  const visitedCountry = userFound.visited.some(visit=> String(visit) === countryId);
+
+if (visitedCountry) {
+  const user = await userModel.findOneAndUpdate(
+    { _id: userId },
+    { $pull: { visited: countryId } },
+    { new: true }
+  ).populate('visited').exec();
+  if (!user) throw new Error('User not found.');
+    return user;
+}
   const user = await userModel.findOneAndUpdate(
     { _id: userId },
     { $push: { visited: countryId } },
     { new: true }
-    );
+    )
     if (!user) throw new Error('User not found.');
-    return user;
+    const fullUser = await userModel.findOne({ _id:new ObjectId( userId) }).populate('visited').exec();
+    fullUser.save();
+    return fullUser;
     
 
 }

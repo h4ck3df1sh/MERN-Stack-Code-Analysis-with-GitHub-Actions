@@ -5,7 +5,7 @@ const router = Router();
 
 router.get(
   '/',
-  countryController.getCountryByFilters,
+  countryController.getCountries,
 );
 
 router.get(
@@ -32,6 +32,11 @@ router.delete(
   '/:id',
   countryController.deleteById,
 );
+router.post(
+  '/addVisited/:countryId',
+  countryController.createVisitor,
+);
+
 
 
 export default router;

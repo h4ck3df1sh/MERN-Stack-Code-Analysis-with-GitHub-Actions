@@ -19,7 +19,7 @@ const router = Router();
 router.post('/register', register);
 router.post('/login', login);
 router.get('/token', auth, (req, res) => res.json('OK'));
-router.use('/countries', countryRouter);
+router.use('/countries', auth, countryRouter);
 router.use('/search', searchRouter);
 router.use('/post', auth, postRouter);
 router.use('/users', auth, usersRouter);

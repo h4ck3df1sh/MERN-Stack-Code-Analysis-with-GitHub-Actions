@@ -60,8 +60,8 @@ export async function getAllUsers(req, res) {
 export async function getUserByToken(req, res) {
   try {
     const query = { _id: req.user._id }
-    const { populateFollowers, populateFollowed, populateLikedPosts } = req.query;
-    const user = await usersLogic.getUserByToken(query, { populateFollowers, populateFollowed, populateLikedPosts });
+    const { populateFollowers, populateFollowed, populateLikedPosts, visited } = req.query;
+    const user = await usersLogic.getUserByToken(query, { populateFollowers, populateFollowed, populateLikedPosts, visited});
     return res.json(user);
   } catch (error) {
     return res.status(error.status || 500).json(error.message);

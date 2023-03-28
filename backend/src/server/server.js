@@ -8,7 +8,7 @@ import { DBconnection } from '../database/databaseConnection.js';
 
 // DEPENDENCIES
 import express from 'express';
-// import { generateUsers, generatePosts, generateComments } from './generate.js';
+import { addCountries, emptyVisitors, generateUsers, generatePosts, generateComments, addVisitors, changeImages } from './generate.js';
 
 // SWAGGER
 import swaggerUI from 'swagger-ui-express';
@@ -44,10 +44,13 @@ async function start() {
   // DATABASE CONNECTION
   await DBconnection();
   //await connectDB();
-  // await generateCities();
+  // await addCountries();
+  // await emptyVisitors();
   // await generateUsers();
   // await generatePosts();
   // await generateComments();
+  // await addVisitors();
+  // await changeImages();
 
   // SERVER START
   const server = app.listen(port, () => {
