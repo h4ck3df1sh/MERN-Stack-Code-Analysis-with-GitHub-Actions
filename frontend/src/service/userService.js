@@ -6,7 +6,7 @@ export async function validateToken() {
   const token = JSON.parse(localStorage.getItem("token"));
   if (!token) return null;
   try {
-    axios.get(URL + 'token', { headers: { Authorization: token } });
+    await axios.get(URL + 'token', { headers: { Authorization: token } });
     return token;
   } catch (error) {
     return null;
@@ -16,7 +16,7 @@ export async function validateToken() {
 export async function getUserInfo(followers, followed, likedPosts, visited) {
   const token = JSON.parse(localStorage.getItem("token"));
   const config = { headers: { authorization: token } };
-  const res = await axios.get(URL + `users/info?populateFollowers=${followers}&populateFollowed=${followed}&populatedLikedPosts=${likedPosts}&visited=${visited}`, config);
+  const res = await axios.get(URL + `users/info?populateFollowers=${true}&populateFollowed=${true}&populatedLikedPosts=${true}&visited=${true}`, config);
   return res.data;
 }
 
@@ -30,7 +30,7 @@ export async function getUserById(userId) {
 export async function editUserById(userId, update) {
   const token = JSON.parse(localStorage.getItem('token'));
   const config = { headers: { Authorization: token } };
-  const response = await axios.put(URL + 'users/id/' + userId, update, config);
+  const response = await axios.put( URL + 'users/id/' + userId, update, config );
   return response.data;
 }
 
@@ -54,3 +54,13 @@ export async function toggleFollow(userId) {
   const response = await axios.post(URL + 'users/follow/' + userId, {}, config);
   return response.data;
 }
+
+export async function recomendation(userId){
+  const body = {
+    'id':userId
+  }
+  const response = axios.post('https://flask-production-782a.up.railway.app/recomendations', body)
+
+  return response.data
+}
+

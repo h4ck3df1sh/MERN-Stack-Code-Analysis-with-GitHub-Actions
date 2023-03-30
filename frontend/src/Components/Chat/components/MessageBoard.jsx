@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { GlobalContext } from '../../../context/UsersState';
 import { ChatContext } from '../context/ChatProvider';
 import { List, ConfigProvider } from 'antd';
@@ -9,16 +9,15 @@ export function MessageBoard() {
   const { socket } = useContext(ChatContext)
   const [events, setEvents] = useState([]);
   const colors = new Map();
+  const messagesEnd = useRef(null);
 
   function onConnect() { }
 
   function onDisconnect(err) {
-    console.log(err.message);
     return setEvents(prev => [...prev, { type: 'warning', value: 'You are now disconnected' }]);
   }
 
   function onMessage(value, type, username) {
-    console.log(value, type, username)
     if (type == 'warning') return setEvents([{ type: 'warning', value }]);
     if (!colors.has(username)) {
       const randomColor = Math.floor(Math.random() * 16777215).toString(16);
@@ -40,6 +39,14 @@ export function MessageBoard() {
     const addedStyles = history.map(e => { return { ...e, bg: colors.get(e.username) } })
     setEvents(addedStyles);
   }
+
+  function scrollToBottom() {
+    messagesEnd.current?.scrollIntoView({ behavioir: 'smooth' });
+  }
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [events])
 
   useEffect(() => {
     if (!socket) return;
@@ -66,23 +73,26 @@ export function MessageBoard() {
         bordered={true}
         itemLayout='vertical'
         dataSource={events}
-        style={{ height: '95%', overflowY: 'auto' }}
+        style={{ height: '90%', overflowY: 'auto' }}
         renderItem={(event, index) => (
-          <List.Item style={{ padding: '5px 5px' }}>
-            <div key={index}>
-              {event.type != 'warning' &&
-                <div className='username'>
-                  {event.username}
+          <>
+            <List.Item style={{ padding: '5px 5px' }}>
+              <div key={index}>
+                {event.type !== 'warning' &&
+                  <div className='username'>
+                    {event.username}
+                  </div>
+                }
+                <div
+                  className={event.type}
+                  style={{ backgroundColor: `${!event.bg ? 'white' : event.bg}` }}
+                >
+                  {event.value}
                 </div>
-              }
-              <div
-                className={event.type}
-                style={{ backgroundColor: `${event.bg}` }}
-              >
-                {event.value}
               </div>
-            </div>
-          </List.Item>
+            </List.Item>
+            {index == events.length - 1 && <div ref={messagesEnd} />}
+          </>
         )}
       />
     </ConfigProvider>
