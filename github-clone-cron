@@ -74,10 +74,11 @@ function updateBackend(){
 }
 
 function main(){
+    git checkout main
     data=$(date -I)
     updateFrontend "$data"
     updateBackend "$data"
-    
+    git checkout main
 }
 
 main
