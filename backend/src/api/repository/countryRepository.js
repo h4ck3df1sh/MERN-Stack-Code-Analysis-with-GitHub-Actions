@@ -59,12 +59,39 @@ const createVisitor = async (countryId, userId) => {
     country.visitors.push(userId);
     user.visited.push(countryId);
   }
-
   await country.save()
   await country.populate("visitors");
   await user.save();
   return country;
 };
+
+const getCountryByName = async (querys) => {
+  const pipeline = [
+    {
+      $search: {
+        index: "SearchCountry",
+        autocomplete: {
+          query: querys,
+          path: "country",
+          fuzzy: {
+            maxEdits: 1,
+          }
+        }
+      }
+    },
+    {
+      $limit: 2
+    },
+    {
+      $project: {
+        country: 1,
+        image: 1
+      }
+    }
+  ]
+  const response = await countryModel.aggregate(pipeline);
+  return response;
+}
 
 export {
   getByName,
@@ -75,4 +102,6 @@ export {
   createCountry,
   getCountries,
   createVisitor,
+  getCountryByName,
 };
+

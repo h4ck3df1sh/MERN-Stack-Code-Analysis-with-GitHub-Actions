@@ -36,6 +36,10 @@ router.post(
   '/addVisited/:countryId',
   countryController.createVisitor,
 );
+router.get(
+  '/search/:query',
+  countryController.getCountryByName,
+)
 
 
 

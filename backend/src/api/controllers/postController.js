@@ -1,21 +1,18 @@
 import * as postBll from '../logic/postBll.js';
 
-async function createPost(req, res) {
+export async function createPost(req, res) {
   try {
-    const { title, content } = req.body;
+    const { title, content, sentiment } = req.body;
     const image = req.file?.path;
-    const file = req.file?.mimetype;
-    const allowFormat = ['image/jpeg', 'image/png', 'image/jpg'];
-    //if(!allowFormat.includes(file)) return res.status(400).json({message: 'File format not supported'})
     const author = req.user._id;
-    const newPost = await postBll.createPost(title, content, author, image);
+    const newPost = await postBll.createPost(title, content, author, image, sentiment);
     return res.send(newPost);
   } catch (e) {
     return res.send(e);
   }
 }
 
-async function getAll(req, res) {
+export async function getAll(req, res) {
   const { page } = req.query;
   try {
     const posts = await postBll.getAll(page);
@@ -25,7 +22,7 @@ async function getAll(req, res) {
   }
 }
 
-async function getById(req, res) {
+export async function getById(req, res) {
   const { id } = req.params;
   if (req.params === '') { return res.json("Missing parameters.") };
   try {
@@ -36,7 +33,7 @@ async function getById(req, res) {
   }
 }
 
-async function updatePostById(req, res) {
+export async function updatePostById(req, res) {
   const { id } = req.params;
   const editedPost = req.body;
   try {
@@ -48,7 +45,7 @@ async function updatePostById(req, res) {
   }
 }
 
-async function deletePostById(req, res) {
+export async function deletePostById(req, res) {
   const { id } = req.params;
   try {
     const deletedPost = postBll.deletePostById({ id });
@@ -59,7 +56,7 @@ async function deletePostById(req, res) {
   }
 }
 
-async function getPostsByAuthorId(req, res) {
+export async function getPostsByAuthorId(req, res) {
   const { userId } = req.params;
   const { page } = req.query;
   try {
@@ -70,7 +67,7 @@ async function getPostsByAuthorId(req, res) {
   }
 }
 
-async function getCommentsByPostId(req, res) {
+export async function getCommentsByPostId(req, res) {
   const { postId } = req.params;
   try {
     const comments = await postBll.getCommentsByPostId(postId);
@@ -81,7 +78,7 @@ async function getCommentsByPostId(req, res) {
 }
 
 
-async function likePost(req, res) {
+export async function likePost(req, res) {
   const { id } = req.params;
   const userId = req.user._id;
   try {
@@ -92,7 +89,7 @@ async function likePost(req, res) {
   }
 }
 
-async function isLiked(req, res) {
+export async function isLiked(req, res) {
   const { id } = req.params;
   const userId = req.user._id;
   try {
@@ -115,4 +112,35 @@ export async function createComment(req, res) {
   }
 }
 
-export { createPost, getAll, getById, updatePostById, deletePostById, getPostsByAuthorId, getCommentsByPostId, likePost, isLiked }
+export async function getFollowedPosts(req, res) {
+  const { page } = req.query;
+  const { userId } = req.params;
+  try {
+    const getPosts = await postBll.getFollowedPosts(userId, page);
+    return res.json(getPosts);
+  } catch (error) {
+    return res.status(400).json(error.message);
+  }
+}
+
+export async function getPostByQuery(req, res) {
+  const { query } = req.params;
+  try {
+    const post = await postBll.getPostByQuery(query);
+    return res.json(post);
+  } catch (e) {
+    return res.json(e.message);
+  }
+}
+
+export async function createPostWithAi(req, res) {
+  try {
+    console.log(req.body)
+    const { title, content, sentiment, image } = req.body;
+    const author = req.user._id;
+    const newPost = await postBll.createPost(title, content, author, image, sentiment);
+    return res.send(newPost);
+  } catch (e) {
+    return res.send(e);
+  }
+}

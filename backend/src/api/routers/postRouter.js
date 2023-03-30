@@ -5,18 +5,20 @@ import { uploadImageMiddleware } from '../../server/multer/multerRouter.js';
 
 const router = Router();
 
+router.get('/followed/:userId', postController.getFollowedPosts);
 router.post('/newpost', uploadImageMiddleware ,postController.createPost);
-
+router.post('/postia', postController.createPostWithAi)
 router.get('/all', postController.getAll);
-
+router.post('/createcomment/:postId', postController.createComment);
+router.get('/like/:id', postController.isLiked);
+router.put('/like/:id', postController.likePost);
+router.get('/userPosts/:userId', postController.getPostsByAuthorId);
+router.get('/comments/:postId', postController.getCommentsByPostId);
+router.get('/search/:query', postController.getPostByQuery);
+router.delete('/:id', postController.deletePostById);
+router.put('/:id', postController.updatePostById);
 router.get('/:id', postController.getById);
 
-router.put('/:id', postController.updatePostById);
-
-router.get('/like/:id', postController.isLiked);
-
-router.delete('/:id', postController.deletePostById);
-router.get('/userPosts/:userId', postController.getPostsByAuthorId);
 /**
  * @swagger
  * /post/{postId}/comments:
@@ -49,7 +51,6 @@ router.get('/userPosts/:userId', postController.getPostsByAuthorId);
  *               $ref: '#/components/schemas/Error'
  */
 
-router.get('/:postId/comments', postController.getCommentsByPostId);
 /**
  * @swagger
  * /post/{postId}/comments:
@@ -85,7 +86,6 @@ router.get('/:postId/comments', postController.getCommentsByPostId);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.post('/createcomment/:postId', postController.createComment);
 /**
  * @swagger
  * /post/like/{id}:
@@ -121,5 +121,4 @@ router.post('/createcomment/:postId', postController.createComment);
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.put('/like/:id', postController.likePost);
 export default router;

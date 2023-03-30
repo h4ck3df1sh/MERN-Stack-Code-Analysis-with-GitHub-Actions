@@ -33,6 +33,7 @@ export const uploadImageMiddleware = (req, res, next) => {
         } else if (err) {
             return res.status(500).json({ message: err.message });
         }
+        console.log('uploadImageMiddleware')
         next();
     });
 };

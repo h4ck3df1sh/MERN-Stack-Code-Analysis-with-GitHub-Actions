@@ -15,9 +15,11 @@ export async function getUserById(req, res) {
 export async function updateUserById(req, res) {
   try {
     const { id } = req.params;
+    const avatar = req.file?.path;
+    console.log(req.file?.path)
     if (!id || !id.match(/^[a-f\d]{24}$/i)) return res.status(400).json('Missing or invalid ID format.');
     const updateData = validateUser.update(req.body);
-    const updatedUser = await usersLogic.updateUserById({ id, updateData });
+    const updatedUser = await usersLogic.updateUserById({ id, updateData, avatar });
     return res.json(updatedUser);
   } catch (error) {
     return res.status(error.status || 500).json(error.message);
@@ -91,3 +93,25 @@ export async function visitedCountryByUserId(req, res) {
   }
 }
 
+export async function getUserByQuery(req,res){
+  try{
+    const { query } = req.params;
+    const user = await usersLogic.UserByQuery(query);
+    if(user.length === 0){
+      return res.json('there´s no matches');
+    }
+    return res.json(user);
+  }catch(e){
+    console.log(e.message);
+  }
+}
+
+export async function getUserComments(req ,res) {
+  try {
+    const userId = req.user._id;
+    const getComments = await usersLogic.getUserComments(userId);
+    return res.json(getComments);
+  } catch (error) {
+    return res.status(error.status || 500).json(error.message);
+  }
+}

@@ -1,8 +1,8 @@
 import * as postRepo from '../repository/postRepository.js';
 
-async function createPost( title, content, author, image ){
+async function createPost( title, content, author, image ,sentiment){
 
-  const CreatedPost = await postRepo.createPost(title, content, author, image )
+  const CreatedPost = await postRepo.createPost(title, content, author, image , sentiment)
   return CreatedPost;
 }
 
@@ -50,4 +50,14 @@ export async function createComment({ content, author, postId }) {
   return postComments;
 }
 
-export { createPost, getAll, getById, updatePostById, deletePostById , getPostsByAuthorId, getCommentsByPostId ,likePost, isLiked }
+export async function getFollowedPosts(userId, page) {
+  const getPosts = await postRepo.getFollowedPosts(userId, page);
+  return getPosts;
+}
+
+async function getPostByQuery(query){
+  const post = await postRepo.getPostByQuery(query);
+  return post;
+}
+
+export { createPost, getAll, getById, updatePostById, deletePostById , getPostsByAuthorId, getCommentsByPostId ,likePost, isLiked, getPostByQuery}

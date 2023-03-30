@@ -98,4 +98,18 @@ const createVisitor= async (req,res) => {
     return res.status(error.status || 500).json(error.message);
   }
 }
-export {getByName, getAll, getById , deleteById ,updateById , createCountry, getCountries, createVisitor}
+
+const getCountryByName = async (req,res) => {
+  const { query } = req.params;
+  try{
+    const country = await countryLogic.getCountryByName(query);
+    if(country.length === 0){
+      return res.json('there´s no matches');
+    }
+    return res.json(country);
+  }catch(e){
+    return res.json(e.message);
+  }
+}
+
+export {getByName, getAll, getById , deleteById ,updateById , createCountry, getCountries, createVisitor, getCountryByName}

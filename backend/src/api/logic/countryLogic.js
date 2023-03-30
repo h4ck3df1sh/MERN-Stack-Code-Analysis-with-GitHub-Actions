@@ -53,5 +53,10 @@ const createVisitor = async (countryId, userId) => {
   return country;
 }
 
+const getCountryByName = async (query) => {
+  const country =  await countryRepository.getCountryByName(query);
+  return country;
+}
 
-export { getByName, getAll, getById, deleteById, updateById, createCountry, getCountries, createVisitor }
+export { getByName, getAll, getById, deleteById, updateById, createCountry, getCountries, createVisitor,getCountryByName }
+

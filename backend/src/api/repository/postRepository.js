@@ -5,8 +5,8 @@ import commentModel from '../models/commentSchema.js';
 
 const ObjectId = mongoose.Types.ObjectId;
 
-async function createPost(title, content, author, image) {
-  const createdPost = await postModel.create({ title, content, author, imagePost: image });
+async function createPost(title, content, author, image, sentiment) {
+  const createdPost = await postModel.create({ title, content, author, imagePost: image, sentiment });
   return createdPost;
 }
 
@@ -24,7 +24,7 @@ async function getAll(page) {
 }
 
 async function getById({ id }) {
-  const post = await postModel.findOne({ _id: new ObjectId(id) });
+  const post = await postModel.findOne({ _id: new ObjectId(id) }).populate('author').exec();
   if (!post) { throw new Error('No post match the search') }
   return post;
 }
@@ -101,4 +101,64 @@ export async function createComment({ content, author, postId }) {
   return newPost;
 }
 
-export { createPost, getAll, getById, updatePostById, deletePostById, getPostsByAuthorId, getCommentsByPostId, likePost, isLiked }
+export async function getFollowedPosts(userId, page) {
+  const getFollowed = await userModel.findOne({ _id: userId });
+  const followed = getFollowed.followed;
+  if (followed.length === 0) return { posts: [], totalPosts: 0 };
+  const totalPosts = await postModel.countDocuments({ $or: [...followed.map(e => { return { author: e } })] });
+  const limit = !page ? 0 : 20;
+  const skip = !page ? 0 : limit * (page - 1);
+  const posts = await postModel.find({ $or: [...followed.map(e => { return { author: e } })] }).
+    sort({ createdAt: -1 }).
+    limit(limit).
+    skip(skip).
+    populate('author').
+    exec();
+  return { posts, totalPosts };
+}
+
+async function getPostByQuery(querys){
+  const pipeline = [
+    {
+      $search: {
+        index: "SearchPost",
+        text: {
+          query: querys,
+          path: "content",
+          fuzzy: {
+            maxEdits: 1,
+          }
+        }
+      }
+    },
+    {
+      $limit: 3
+    },
+    {
+      $lookup:
+        {
+          from: 'users',
+          localField: 'author',
+          foreignField: '_id',
+          pipeline: [
+            { 
+              $project: { _id: 0, avatar: 1, firstName: 1, lastName: 1}
+            }
+          ],
+          as: 'users',
+        }
+    },
+    {
+      $project: {
+        title: 1,
+        content: 1,
+        author: 1,
+        users: 1
+      }
+    }
+  ]
+  const response = await postModel.aggregate(pipeline);
+  return response;
+}
+
+export { createPost, getAll, getById, updatePostById, deletePostById, getPostsByAuthorId, getCommentsByPostId, likePost, isLiked, getPostByQuery}

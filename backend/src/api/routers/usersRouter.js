@@ -7,11 +7,13 @@ const router = Router();
 router.get('/', usersController.getAllUsers)
 router.get('/info', usersController.getUserByToken)
 router.get('/id/:id', usersController.getUserById)
-router.put('/id/:id', usersController.updateUserById)
+router.get('/comments', usersController.getUserComments)
+router.put('/id/:id', uploadImageMiddleware, usersController.updateUserById)
 router.delete('/id/:id', usersController.deleteUserById)
 router.post('/follow/:id', usersController.toggleFollowByUserId)
 router.post('/avatar',uploadImageMiddleware, usersController.updateUserAvatarById)
 router.post('/:userId/countries/:countryId', usersController.visitedCountryByUserId)
+router.get('/search/:query', usersController.getUserByQuery)
 
 
 export default router;

@@ -17,16 +17,23 @@ export async function getUserById({ id }) {
     populate('followed').
     populate('followers').
     populate('likedPosts').
+    populate('visited').
     select('-password -salt').
     exec();
+  await user.populate({ path: 'likedPosts.author', model: 'User' });
   if (!user) throw new Error('User not found.');
   return user;
 }
 
-export async function updateUserById({ id, updateData }) {
+export async function updateUserById({ id, updateData, avatar }) {
+  console.log(id)
+  if (avatar) updateData.avatar = avatar;
+  console.log(updateData)
   const currentUser = await userModel.findOne({ _id: id }).select('-password -salt').exec();
   if (!currentUser) throw new Error('User not found.');
-  const updatedUser = await userModel.findOneAndUpdate({ _id: id }, updateData, { new: true });
+  const updatedUser = await userModel.findOneAndUpdate({ _id: id }, updateData, { new: true }).
+    populate('visited').select('-password -salt').
+    exec();
   return updatedUser;
 }
 
@@ -44,7 +51,7 @@ export async function getAllUsers(query) {
 }
 
 export async function updateAvatar(user, image) {
-  const avatar = await userModel.findOneAndUpdate({ _id: user }, { $set: { avatar: image } }, { new: true }).select('-password -salt').exec();
+  const avatar = await userModel.findOneAndUpdate({ _id: user }, { $set: { avatar: image } }, { new: true }).populate('visited').select('-password -salt').exec();
   return avatar;
 }
 
@@ -54,7 +61,10 @@ export async function getUserByToken(query, params) {
   const users = await userModel.findOne(query).select('-password -salt').exec();
   if (populateFollowers == 'true') await users.populate('followers');
   if (populateFollowed == 'true') await users.populate('followed');
-  if (populateLikedPosts == 'true') await users.populate('likedPosts');
+  if (populateLikedPosts == 'true') {
+    await users.populate('likedPosts');
+    await users.populate({ path: 'likedPosts.author', model: 'User' });
+  }
   if (visited == 'true') await users.populate('visited');
   if (!users) throw new Error('No users found.');
   return users;
@@ -75,30 +85,65 @@ export async function toggleFollowByUserId(actionUser, affectUser) {
   await userFollowed.populate('followers')
   await userFollowed.populate('followed')
   await userFollowed.populate('likedPosts')
+  await userFollowed.populate('visited')
   return userFollowed;
 }
 export async function visitedCountryByUserId(userId, countryId) {
-  const userFound = await userModel.findOne({ _id: new ObjectId(userId)  });
-  const visitedCountry = userFound.visited.some(visit=> String(visit) === countryId);
+  const userFound = await userModel.findOne({ _id: new ObjectId(userId) });
+  const visitedCountry = userFound.visited.some(visit => String(visit) === countryId);
 
-if (visitedCountry) {
-  const user = await userModel.findOneAndUpdate(
-    { _id: userId },
-    { $pull: { visited: countryId } },
-    { new: true }
-  ).populate('visited').exec();
-  if (!user) throw new Error('User not found.');
+  if (visitedCountry) {
+    const user = await userModel.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { visited: countryId } },
+      { new: true }
+    ).populate('visited').exec();
+    if (!user) throw new Error('User not found.');
     return user;
-}
+  }
   const user = await userModel.findOneAndUpdate(
     { _id: userId },
     { $push: { visited: countryId } },
     { new: true }
-    )
-    if (!user) throw new Error('User not found.');
-    const fullUser = await userModel.findOne({ _id:new ObjectId( userId) }).populate('visited').exec();
-    fullUser.save();
-    return fullUser;
-    
+  )
+  if (!user) throw new Error('User not found.');
+  const fullUser = await userModel.findOne({ _id: new ObjectId(userId) }).populate('visited').exec();
+  fullUser.save();
+  return fullUser;
 
+
+}
+
+export async function UserByQuery(querys) {
+  const pipeline = [
+    {
+      $search: {
+        index: "SearchUsers",
+        autocomplete: {
+          query: querys,
+          path: "firstName",
+          fuzzy: {
+            maxEdits: 1,
+          }
+        }
+      }
+    },
+    {
+      $limit: 5
+    },
+    {
+      $project: {
+        firstName: 1,
+        lastName: 1,
+        avatar: 1
+      }
+    }
+  ]
+  const response = await userModel.aggregate(pipeline);
+  return response;
+}
+
+export async function getUserComments(userId) {
+  const getComments = await commentModel.find({ author: userId }).populate('author').populate('post').exec();
+  return getComments;
 }
